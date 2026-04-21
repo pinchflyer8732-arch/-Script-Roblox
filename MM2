@@ -1,29 +1,30 @@
 --[[
-    P-FIRST™ PRIVATE HUB V3.1
-    Developed by: พีเฟิร์ส™
-    Community: 162 Members
-    Description: MM2 Optimized ESP & Utility System
+    พีเฟิร์ส™ ไพรเวท ฮับ V3.2
+    พัฒนาโดย: พีเฟิร์ส™
+    กลุ่มสมาชิก: 162 คน
+    ระบบ: ESP ภาษาไทย + สเต็ปบราซิล
 ]]
 
--- [ SERVICE & VARIABLES ]
+-- [ ตั้งค่าบริการและตัวแปร ]
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local EspActive = false
+local SpinActive = false
 
--- [ CLEANUP SYSTEM ]
-if CoreGui:FindFirstChild("PFirst_V3_1") then 
-    CoreGui.PFirst_V3_1:Destroy() 
+-- [ ระบบลบของเก่าป้องกันบัค ]
+if CoreGui:FindFirstChild("PFirst_V3_2_TH") then 
+    CoreGui.PFirst_V3_2_TH:Destroy() 
 end
 
--- [ UI CONSTRUCTION ]
+-- [ สร้างหน้าจอ UI ]
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "PFirst_V3_1"
+ScreenGui.Name = "PFirst_V3_2_TH"
 ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- ปุ่มเปิด-ปิด (Toggle)
+-- ปุ่มเปิด-ปิดเมนู (Toggle)
 local ToggleBtn = Instance.new("TextButton")
 ToggleBtn.Name = "PFirst_Toggle"
 ToggleBtn.Parent = ScreenGui
@@ -37,78 +38,164 @@ ToggleBtn.TextSize = 14
 ToggleBtn.BorderSizePixel = 1
 ToggleBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
 
--- เฟรมหลัก
+-- เฟรมเมนูหลัก
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainContainer"
 MainFrame.Parent = ScreenGui
-MainFrame.Size = UDim2.new(0, 260, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -130, 0.5, -160)
+MainFrame.Size = UDim2.new(0, 260, 0, 340)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -170)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 
--- ระบบสลับการมองเห็น UI
 ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- หัวข้อ (Header)
+-- หัวข้อเมนู (ภาษาไทย)
 local Header = Instance.new("TextLabel")
 Header.Parent = MainFrame
 Header.Size = UDim2.new(1, 0, 0, 50)
 Header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-Header.Text = "P-FIRST™ HUB V3.1"
+Header.Text = "พีเฟิร์ส™ ฮับ V3.2" -- แก้เป็นภาษาไทยตามสั่ง
 Header.TextColor3 = Color3.fromRGB(255, 255, 255)
 Header.TextSize = 20
 Header.Font = Enum.Font.SourceSansBold
 
--- ระบบ Tab
+-- ระบบแถบเลือก (Tabs)
 local TabFrame = Instance.new("Frame")
 TabFrame.Parent = MainFrame
 TabFrame.Size = UDim2.new(1, 0, 0, 35)
 TabFrame.Position = UDim2.new(0, 0, 0, 50)
 TabFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-TabFrame.BorderSizePixel = 0
 
-local function createTab(name, pos)
-    local btn = Instance.new("TextButton")
-    btn.Parent = TabFrame
-    btn.Size = UDim2.new(0.5, 0, 1, 0)
-    btn.Position = pos
-    btn.Text = name
-    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
-    btn.BorderSizePixel = 0
-    btn.Font = Enum.Font.SourceSansBold
-    return btn
-end
+local MainTab = Instance.new("TextButton")
+MainTab.Parent = TabFrame
+MainTab.Size = UDim2.new(0.5, 0, 1, 0)
+MainTab.Text = "หน้าหลัก" -- ภาษาไทย
+MainTab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+MainTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+MainTab.Font = Enum.Font.SourceSansBold
 
-local MainTab = createTab("MAIN", UDim2.new(0, 0, 0, 0))
-local UpdateTab = createTab("UPDATE", UDim2.new(0.5, 0, 0, 0))
+local UpdateTab = Instance.new("TextButton")
+UpdateTab.Parent = TabFrame
+UpdateTab.Size = UDim2.new(0.5, 0, 1, 0)
+UpdateTab.Position = UDim2.new(0.5, 0, 0, 0)
+UpdateTab.Text = "อัปเดต" -- ภาษาไทย
+UpdateTab.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+UpdateTab.TextColor3 = Color3.fromRGB(150, 150, 150)
+UpdateTab.Font = Enum.Font.SourceSansBold
 
--- Scrolling Content
+-- หน้าเนื้อหาแบบเลื่อนได้
 local MainScroll = Instance.new("ScrollingFrame")
 MainScroll.Parent = MainFrame
 MainScroll.Size = UDim2.new(1, 0, 1, -85)
 MainScroll.Position = UDim2.new(0, 0, 0, 85)
 MainScroll.BackgroundTransparency = 1
-MainScroll.CanvasSize = UDim2.new(0, 0, 1.8, 0)
+MainScroll.CanvasSize = UDim2.new(0, 0, 2.2, 0)
 MainScroll.ScrollBarThickness = 3
 
-local UpdateScroll = Instance.new("ScrollingFrame")
-UpdateScroll.Parent = MainFrame
-UpdateScroll.Size = UDim2.new(1, 0, 1, -85)
-UpdateScroll.Position = UDim2.new(0, 0, 0, 85)
-UpdateScroll.BackgroundTransparency = 1
-UpdateScroll.Visible = false
-UpdateScroll.CanvasSize = UDim2.new(0, 0, 1.2, 0)
-UpdateScroll.ScrollBarThickness = 3
+-- [ ระบบสปิน 360 องศา ]
+local function ToggleSpin()
+    SpinActive = not SpinActive
+    if SpinActive then
+        task.spawn(function()
+            while SpinActive do
+                pcall(function()
+                    local char = LocalPlayer.Character
+                    local rootJoint = char.LowerTorso:FindFirstChild("Root") or char.HumanoidRootPart:FindFirstChild("RootJoint")
+                    if rootJoint then
+                        rootJoint.C0 = rootJoint.C0 * CFrame.Angles(0, math.rad(45), 0)
+                    end
+                end)
+                RunService.RenderStepped:Wait()
+            end
+            pcall(function()
+                local rootJoint = LocalPlayer.Character.LowerTorso:FindFirstChild("Root") or LocalPlayer.Character.HumanoidRootPart:FindFirstChild("RootJoint")
+                if rootJoint then rootJoint.C0 = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)) end
+            end)
+        end)
+    end
+end
 
--- [ LOGIC: ESP ENGINE ]
-local function StartESP()
+-- [ ปุ่มและองค์ประกอบในหน้าหลัก ]
+
+-- ปุ่มเปิดระบบ ESP
+local EspBtn = Instance.new("TextButton")
+EspBtn.Parent = MainScroll
+EspBtn.Size = UDim2.new(0, 220, 0, 50)
+EspBtn.Position = UDim2.new(0.5, -110, 0, 15)
+EspBtn.BackgroundColor3 = Color3.fromRGB(80, 0, 200)
+EspBtn.Text = "เปิดระบบมองทะลุ (ESP)" -- ภาษาไทย
+EspBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspBtn.Font = Enum.Font.SourceSansBold
+EspBtn.TextSize = 20
+
+-- กล่องอธิบายสี (ภาษาไทยชัดเจน)
+local Info = Instance.new("Frame")
+Info.Parent = MainScroll
+Info.Size = UDim2.new(0, 220, 0, 100)
+Info.Position = UDim2.new(0.5, -110, 0, 75)
+Info.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+
+local function addGuide(txt, col, y)
+    local l = Instance.new("TextLabel")
+    l.Parent = Info
+    l.Size = UDim2.new(1, -20, 0, 30)
+    l.Position = UDim2.new(0, 10, 0, y)
+    l.Text = "• " .. txt
+    l.TextColor3 = col
+    l.TextSize = 16
+    l.Font = Enum.Font.SourceSansBold
+    l.BackgroundTransparency = 1
+    l.TextXAlignment = Enum.TextXAlignment.Left
+end
+
+addGuide("ฆาตกร = สีแดง", Color3.fromRGB(255, 0, 0), 5) --
+addGuide("นายอำเภอ = สีฟ้า", Color3.fromRGB(0, 150, 255), 35) --
+addGuide("คนธรรมดา = สีเขียว", Color3.fromRGB(0, 255, 0), 65) --
+
+-- ปุ่มสเต็ปบราซิล
+local BrazilBtn = Instance.new("TextButton")
+BrazilBtn.Parent = MainScroll
+BrazilBtn.Size = UDim2.new(0, 220, 0, 45)
+BrazilBtn.Position = UDim2.new(0.5, -110, 0, 185)
+BrazilBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+BrazilBtn.Text = "สเต็ปบราซิล (ปิดอยู่)" -- ภาษาไทย
+BrazilBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+BrazilBtn.Font = Enum.Font.SourceSansBold
+BrazilBtn.TextSize = 18
+
+BrazilBtn.MouseButton1Click:Connect(function()
+    ToggleSpin()
+    BrazilBtn.Text = SpinActive and "สเต็ปบราซิล (ทำงาน)" or "สเต็ปบราซิล (ปิดอยู่)"
+    BrazilBtn.BackgroundColor3 = SpinActive and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(0, 120, 255)
+end)
+
+-- ปุ่มหายตัว
+local InvisBtn = Instance.new("TextButton")
+InvisBtn.Parent = MainScroll
+InvisBtn.Size = UDim2.new(0, 220, 0, 45)
+InvisBtn.Position = UDim2.new(0.5, -110, 0, 240)
+InvisBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 0)
+InvisBtn.Text = "รันสคริปต์หายตัว" -- ภาษาไทย
+InvisBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+InvisBtn.Font = Enum.Font.SourceSansBold
+InvisBtn.TextSize = 18
+
+InvisBtn.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet('https://pastebin.com/raw/3Rnd9rHf'))()
+    InvisBtn.Text = "เริ่มทำงานแล้ว"
+    InvisBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+end)
+
+-- [ ระบบ ESP Engine ]
+EspBtn.MouseButton1Click:Connect(function()
     if EspActive then return end
     EspActive = true
+    EspBtn.Text = "ระบบทำงานแล้ว ✅"
+    EspBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
     
     task.spawn(function()
         while EspActive do
@@ -126,110 +213,13 @@ local function StartESP()
                         local hasKnife = p.Backpack:FindFirstChild("Knife") or char:FindFirstChild("Knife")
                         local hasGun = p.Backpack:FindFirstChild("Gun") or char:FindFirstChild("Gun")
                         
-                        if hasKnife then 
-                            hl.FillColor = Color3.fromRGB(255, 0, 0)
-                        elseif hasGun then 
-                            hl.FillColor = Color3.fromRGB(0, 150, 255)
-                        else 
-                            hl.FillColor = Color3.fromRGB(0, 255, 0) 
-                        end
+                        if hasKnife then hl.FillColor = Color3.fromRGB(255, 0, 0) --
+                        elseif hasGun then hl.FillColor = Color3.fromRGB(0, 150, 255) --
+                        else hl.FillColor = Color3.fromRGB(0, 255, 0) end --
                     end)
                 end
             end
             task.wait(1.5)
         end
     end)
-end
-
--- [ UI ELEMENTS: MAIN ]
-local EspBtn = Instance.new("TextButton")
-EspBtn.Parent = MainScroll
-EspBtn.Size = UDim2.new(0, 220, 0, 50)
-EspBtn.Position = UDim2.new(0.5, -110, 0, 15)
-EspBtn.BackgroundColor3 = Color3.fromRGB(80, 0, 200)
-EspBtn.Text = "ESP ALL SYSTEM"
-EspBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-EspBtn.Font = Enum.Font.SourceSansBold
-EspBtn.TextSize = 22
-EspBtn.BorderSizePixel = 0
-
-EspBtn.MouseButton1Click:Connect(function()
-    StartESP()
-    EspBtn.Text = "SYSTEM ACTIVE"
-    EspBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-end)
-
--- Info Box
-local Info = Instance.new("Frame")
-Info.Parent = MainScroll
-Info.Size = UDim2.new(0, 220, 0, 100)
-Info.Position = UDim2.new(0.5, -110, 0, 75)
-Info.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Info.BorderSizePixel = 0
-
-local function addGuide(txt, col, y)
-    local l = Instance.new("TextLabel")
-    l.Parent = Info
-    l.Size = UDim2.new(1, -20, 0, 30)
-    l.Position = UDim2.new(0, 10, 0, y)
-    l.Text = "• " .. txt
-    l.TextColor3 = col
-    l.TextSize = 16
-    l.Font = Enum.Font.SourceSansBold
-    l.BackgroundTransparency = 1
-    l.TextXAlignment = Enum.TextXAlignment.Left
-end
-
-addGuide("ฆาตกร = สีแดง", Color3.fromRGB(255, 0, 0), 5)
-addGuide("นายอำเภอ = สีฟ้า", Color3.fromRGB(0, 150, 255), 35)
-addGuide("คนธรรมดา = สีเขียว", Color3.fromRGB(0, 255, 0), 65)
-
--- ปุ่มหายตัว (Invis Script)
-local InvisBtn = Instance.new("TextButton")
-InvisBtn.Parent = MainScroll
-InvisBtn.Size = UDim2.new(0, 220, 0, 50)
-InvisBtn.Position = UDim2.new(0.5, -110, 0, 185)
-InvisBtn.BackgroundColor3 = Color3.fromRGB(200, 80, 0)
-InvisBtn.Text = "หายตัว (RUN SCRIPT)"
-InvisBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-InvisBtn.Font = Enum.Font.SourceSansBold
-InvisBtn.TextSize = 18
-
-InvisBtn.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet('https://pastebin.com/raw/3Rnd9rHf'))()
-end)
-
--- [ UI ELEMENTS: UPDATE LOG ]
-local Log = Instance.new("TextLabel")
-Log.Parent = UpdateScroll
-Log.Size = UDim2.new(1, -20, 1, 0)
-Log.Position = UDim2.new(0, 10, 0, 10)
-Log.BackgroundTransparency = 1
-Log.TextColor3 = Color3.fromRGB(255, 255, 255)
-Log.TextSize = 14
-Log.TextXAlignment = Enum.TextXAlignment.Left
-Log.TextYAlignment = Enum.TextYAlignment.Top
-Log.TextWrapped = true
-Log.Text = [[
-[ CHANGELOG V3.1 ]
-- เพิ่มฟังก์ชันเลื่อนหน้าจอ (ScrollingFrame)
-- ระบบ ESP ตรวจสอบอาวุธแบบเรียลไทม์
-- แก้ไขปัญหา UI บัค และจัดระเบียบโค้ดใหม่
-- ปุ่มหายตัว รันสคริปต์อัตโนมัติ 100%
-- เพิ่มกล่องแจ้งสถานะสีเพื่อความเข้าใจง่าย
-]]
-
--- [ TAB NAVIGATION ]
-MainTab.MouseButton1Click:Connect(function()
-    MainScroll.Visible = true
-    UpdateScroll.Visible = false
-    MainTab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    UpdateTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-end)
-
-UpdateTab.MouseButton1Click:Connect(function()
-    MainScroll.Visible = false
-    UpdateScroll.Visible = true
-    UpdateTab.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    MainTab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 end)
