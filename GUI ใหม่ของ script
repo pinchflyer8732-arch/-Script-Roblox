@@ -1,0 +1,149 @@
+-- [[ P-FIRST™ PRIVATE HUB V4.3 - RAYFIELD FULL ]] --
+-- [[ เวอร์ชันใหม่ล่าสุด สำหรับสมาชิกสายพรีเมียม | BY พีเฟิร์ส™ ]] --
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "พีเฟิร์ส™ PRIVATE HUB V4.3",
+   LoadingTitle = "กำลังรันสคริปต์ใหม่...",
+   LoadingSubtitle = "by พีเฟิร์ส™ | Delta X Ready",
+   ConfigurationSaving = { Enabled = false },
+   KeySystem = false -- ไม่ต้องใส่คีย์ให้สมาชิกยุ่งยาก
+})
+
+-- [ ตัวแปรสถานะ ]
+local EspActive = false
+local SpinActive = false
+local EspGunActive = false
+
+-- [ Tab: หน้าหลัก ]
+local MainTab = Window:CreateTab("หน้าหลัก", 4483362458)
+
+-- [ 1. ฟังก์ชัน ESP ผู้เล่น (สแกนหาอาวุธ) ]
+local function StartPlayerESP()
+    task.spawn(function()
+        while true do
+            if not EspActive then break end
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= game.Players.LocalPlayer and player.Character then
+                    pcall(function()
+                        local char = player.Character
+                        local hl = char:FindFirstChild("PFirst_HL") or Instance.new("Highlight", char)
+                        hl.Name = "PFirst_HL"
+                        
+                        local hasKnife = player.Backpack:FindFirstChild("Knife") or char:FindFirstChild("Knife")
+                        local hasGun = player.Backpack:FindFirstChild("Gun") or char:FindFirstChild("Gun")
+
+                        if hasKnife then
+                            hl.FillColor = Color3.fromRGB(255, 0, 0) -- ฆาตกร: แดง
+                        elseif hasGun then
+                            hl.FillColor = Color3.fromRGB(0, 150, 255) -- นายอำเภอ: ฟ้า
+                        else
+                            hl.FillColor = Color3.fromRGB(0, 255, 0) -- คนธรรมดา: เขียว
+                        end
+                    end)
+                end
+            end
+            task.wait(1.2) -- สแกนทุก 1.2 วินาทีตามสไตล์คุณ
+        end
+    end)
+end
+
+-- [ 2. ฟังก์ชัน ESP ปืนตกที่พื้น ]
+local function StartGunESP()
+    task.spawn(function()
+        while true do
+            if not EspGunActive then break end
+            for _, v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("TouchTransmitter") and v.Parent and v.Parent.Name == "GunDrop" then
+                    pcall(function()
+                        local p = v.Parent
+                        local hl = p:FindFirstChild("Gun_HL") or Instance.new("Highlight", p)
+                        hl.Name = "Gun_HL"
+                        hl.FillColor = Color3.fromRGB(255, 255, 0) -- ปืน: เหลือง
+                    end)
+                end
+            end
+            task.wait(2)
+        end
+    end)
+end
+
+-- [ ปุ่มกดใน UI ]
+
+MainTab:CreateSection("ระบบสแกน (ESP)")
+
+MainTab:CreateToggle({
+   Name = "ESP ผู้เล่น (เขียว/ฟ้า/แดง)",
+   CurrentValue = false,
+   Flag = "EspPlayer",
+   Callback = function(Value)
+       EspActive = Value
+       if Value then StartPlayerESP() end
+   end,
+})
+
+MainTab:CreateToggle({
+   Name = "ESP GUN (ปืนที่ตกพื้น)",
+   CurrentValue = false,
+   Flag = "EspGun",
+   Callback = function(Value)
+       EspGunActive = Value
+       if Value then StartGunESP() end
+   end,
+})
+
+MainTab:CreateSection("ระบบตัวละคร")
+
+MainTab:CreateToggle({
+   Name = "สเต็ปบราซิล (หมุนตัวลื่นๆ)",
+   CurrentValue = false,
+   Flag = "StepBrazil",
+   Callback = function(Value)
+       SpinActive = Value
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "รันสคริปต์หายตัว (ส้ม)",
+   Callback = function()
+       loadstring(game:HttpGet('https://pastebin.com/raw/3Rnd9rHf'))()
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "บิน Fly (ไม่ปลอดภัย)",
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+   end,
+})
+
+MainTab:CreateSection("ฟังก์ชันพิเศษ")
+
+MainTab:CreateButton({
+   Name = "Click TP ไอเทม (ที่คุณแฮกมา)",
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/wackshopr-tech/script-roblox-all/refs/heads/main/SCRIPT-ALL-BY-WACK-SHOP/Click%20TP/Click-TP.lua"))()
+   end,
+})
+
+-- [ Tab: ข้อมูล ]
+local InfoTab = Window:CreateTab("ข้อมูล", 4483362458)
+InfoTab:CreateParagraph({Title = "เครดิต", Content = "สร้างโดย: พีเฟิร์ส™\nสมาชิกในกลุ่ม: 162 คน\nเวอร์ชัน: 4.3 (Rayfield Edition)"})
+
+-- [ ระบบ Loop เบื้องหลังสำหรับสเต็ปบราซิล (Fix Walking) ]
+game:GetService("RunService").Heartbeat:Connect(function()
+    if SpinActive and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
+        -- ถ้าความเร็วเดิน (Magnitude) น้อยกว่า 2 ให้หมุนแรง (45 องศา) ถ้าเดินอยู่ให้หมุนเบา (15 องศา)
+        local rotation = hrp.Velocity.Magnitude < 2 and 45 or 15
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(rotation), 0)
+    end
+end)
+
+Rayfield:Notify({
+   Title = "พีเฟิร์ส™ HUB V4.3",
+   Content = "รัน UI ใหม่สำเร็จ! ขอให้สนุกกับการโกงครับ",
+   Duration = 5,
+   Image = 4483362458,
+})
