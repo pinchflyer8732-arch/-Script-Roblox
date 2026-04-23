@@ -1,0 +1,136 @@
+-- [[ ⚠️ WARNING: DO NOT CHANGE THE OWNER NAME ⚠️ ]] --
+-- [[ OWNER: พีเฟิร์ส™ | ONLY AUTHORIZED FOR พีเฟิร์ส™ ]] --
+
+local OwnerName = "พีเฟิร์ส™" -- ห้ามแก้ตรงนี้เด็ดขาด
+
+-- [ ระบบป้องกันการเปลี่ยนชื่อค่าย ]
+if OwnerName ~= "พีเฟิร์ส™" then
+    game.Players.LocalPlayer:Kick("อย่าก๊อปสคริปต์ พีเฟิร์ส™ ไปเปลี่ยนชื่อเลยครับน้องๆ")
+    return
+end
+
+local p = game:GetService("Players")
+local cg = game:GetService("CoreGui")
+local rs = game:GetService("RunService")
+local lp = p.LocalPlayer
+
+local show_esp = false 
+local auto_gun = true     
+local is_spinning = false      
+
+-- [ 1. ระบบ ESP (MM2) ]
+local function run_detection()
+    if not show_esp then 
+        for _, v in pairs(p:GetPlayers()) do
+            if v.Character then
+                if v.Character:FindFirstChild("HL_Data") then v.Character.HL_Data:Destroy() end
+                if v.Character:FindFirstChild("Tag_Data") then v.Character.Tag_Data:Destroy() end
+            end
+        end
+        return 
+    end
+    for _, v in pairs(p:GetPlayers()) do
+        if v ~= lp and v.Character and v.Character:FindFirstChild("Head") then
+            pcall(function()
+                local c = v.Character
+                local h = c.Head
+                local hl = c:FindFirstChild("HL_Data") or Instance.new("Highlight", c)
+                hl.Name = "HL_Data"; hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop; hl.FillTransparency = 0.5
+                local tg = c:FindFirstChild("Tag_Data") or Instance.new("BillboardGui", c)
+                tg.Name = "Tag_Data"; tg.Adornee = h; tg.AlwaysOnTop = true; tg.Size = UDim2.new(0, 100, 0, 30); tg.StudsOffset = Vector3.new(0, 3, 0)
+                local tx = tg:FindFirstChild("Info") or Instance.new("TextLabel", tg)
+                tx.Name = "Info"; tx.BackgroundTransparency = 1; tx.Size = UDim2.new(1, 0, 1, 0); tx.Font = Enum.Font.GothamBlack; tx.TextSize = 14
+                
+                local kn = v.Backpack:FindFirstChild("Knife") or c:FindFirstChild("Knife")
+                local gn = v.Backpack:FindFirstChild("Gun") or c:FindFirstChild("Gun")
+                
+                if kn then hl.FillColor = Color3.fromRGB(255, 0, 0); tx.Text = "ไอ้ชั่วสวาท"; tx.TextColor3 = Color3.fromRGB(255, 0, 0)
+                elseif gn then hl.FillColor = Color3.fromRGB(0, 120, 255); tx.Text = "นายอำเภอ"; tx.TextColor3 = Color3.fromRGB(0, 120, 255)
+                else hl.FillColor = Color3.fromRGB(0, 255, 0); tx.Text = "คนดี"; tx.TextColor3 = Color3.fromRGB(0, 255, 0) end
+            end)
+        end
+    end
+end
+
+-- [ 2. โครงสร้าง UI (ใส่ชื่อค่าย พีเฟิร์ส™ คืนให้ทุกจุด) ]
+if cg:FindFirstChild("PFirst_MasterHub") then cg.PFirst_MasterHub:Destroy() end
+local ui = Instance.new("ScreenGui", cg); ui.Name = "PFirst_MasterHub"
+
+local frame = Instance.new("Frame", ui)
+frame.Size = UDim2.new(0, 550, 0, 350); frame.Position = UDim2.new(0.5, -275, 0.5, -175)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15); frame.BorderSizePixel = 2; frame.BorderColor3 = Color3.fromRGB(0, 255, 0)
+frame.Active = true; frame.Draggable = true
+
+local side = Instance.new("Frame", frame)
+side.Size = UDim2.new(0, 150, 1, 0); side.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+
+local head = Instance.new("TextLabel", side)
+head.Size = UDim2.new(1, 0, 0, 50); head.Text = OwnerName .. " V5.5"; head.TextColor3 = Color3.new(0, 1, 0); head.Font = Enum.Font.SourceSansBold; head.TextSize = 18; head.BackgroundTransparency = 1
+
+local content = Instance.new("Frame", frame)
+content.Size = UDim2.new(1, -160, 1, -20); content.Position = UDim2.new(0, 155, 0, 10); content.BackgroundTransparency = 1
+
+local page1 = Instance.new("ScrollingFrame", content); page1.Size = UDim2.new(1, 0, 1, 0); page1.BackgroundTransparency = 1; page1.Visible = true; page1.ScrollBarThickness = 0
+local lay1 = Instance.new("UIListLayout", page1); lay1.Padding = UDim.new(0, 8)
+
+local page2 = Instance.new("ScrollingFrame", content); page2.Size = UDim2.new(1, 0, 1, 0); page2.BackgroundTransparency = 1; page2.Visible = false; page2.ScrollBarThickness = 0
+local lay2 = Instance.new("UIListLayout", page2); lay2.Padding = UDim.new(0, 8)
+
+local function make_tab(txt, y, target)
+    local b = Instance.new("TextButton", side); b.Size = UDim2.new(0.9, 0, 0, 40); b.Position = UDim2.new(0.05, 0, 0, y)
+    b.BackgroundColor3 = Color3.fromRGB(30, 30, 30); b.Text = txt; b.TextColor3 = Color3.new(1,1,1); b.Font = Enum.Font.SourceSansBold
+    b.MouseButton1Click:Connect(function() page1.Visible = (target == page1); page2.Visible = (target == page2) end)
+end
+make_tab("หน้าหลัก", 70, page1)
+make_tab("อัพเดท Script", 120, page2)
+
+-- [ 3. ปุ่มหน้าหลัก ]
+local function make_btn(txt, clr, prnt, fn)
+    local b = Instance.new("TextButton", prnt); b.Size = UDim2.new(1, -10, 0, 45); b.BackgroundColor3 = clr; b.Text = txt; b.TextColor3 = Color3.new(1,1,1); b.Font = Enum.Font.SourceSansBold; b.TextSize = 16
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6); b.MouseButton1Click:Connect(fn)
+end
+
+make_btn("ESP: สแกนบทบาทคน", Color3.fromRGB(0, 170, 0), page1, function() show_esp = not show_esp; run_detection() end)
+make_btn("ESP GUN: สแกนปืนตก", Color3.fromRGB(180, 150, 0), page1, function() end)
+make_btn("Click Teleport (วาร์ป)", Color3.fromRGB(130, 0, 180), page1, function() loadstring(game:HttpGet("https://raw.githubusercontent.com/wackshopr-tech/script-roblox-all/refs/heads/main/SCRIPT-ALL-BY-WACK-SHOP/Click%20TP/Click-TP.lua"))() end)
+make_btn("Infinity Jump", Color3.fromRGB(0, 100, 255), page1, function() loadstring(game:HttpGet("https://raw.githubusercontent.com/wackshopr-tech/script-roblox-all/refs/heads/main/SCRIPT-ALL-BY-WACK-SHOP/Infinite%20Jump/Infinite-Jump.lua"))() end)
+make_btn("สเต็ปบราซิล: ปิด/เปิด", Color3.fromRGB(0, 180, 200), page1, function() is_spinning = not is_spinning end)
+make_btn("หายตัว (Invisible FE)", Color3.fromRGB(200, 100, 0), page1, function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"))() end)
+make_btn("Fly (ไม่ปลอดภัย)", Color3.fromRGB(200, 0, 0), page1, function() loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))() end)
+
+-- [ 4. หน้าอัปเดต (ใส่เครดิต พีเฟิร์ส™ แบบจัดเต็ม) ]
+local function add_log(txt)
+    local l = Instance.new("TextLabel", page2); l.Size = UDim2.new(1, -10, 0, 30); l.BackgroundTransparency = 1; l.Text = "● "..txt; l.TextColor3 = Color3.new(1,1,1); l.Font = Enum.Font.SourceSans; l.TextSize = 15; l.TextXAlignment = Enum.TextXAlignment.Left
+end
+
+add_log("OWNER: " .. OwnerName)
+add_log("VERSION: 5.5 FINAL")
+add_log("ระบบสแกนบทบาทอัตโนมัติ (MM2)")
+add_log("เพิ่มระบบ Click TP & Infinity Jump")
+add_log("ห้ามดัดแปลงโค้ดโดยไม่ได้รับอนุญาต")
+
+-- [ 5. ระบบเบื้องหลัง ]
+task.spawn(function()
+    while true do
+        run_detection()
+        if auto_gun then
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v.Name == "GunDrop" then
+                    local h = v:FindFirstChild("Gun_HL") or Instance.new("Highlight", v)
+                    h.Name = "Gun_HL"; h.FillColor = Color3.fromRGB(255, 255, 0)
+                end
+            end
+        end
+        task.wait(1.2)
+    end
+end)
+
+rs.Heartbeat:Connect(function()
+    if is_spinning and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+        lp.Character.HumanoidRootPart.CFrame *= CFrame.Angles(0, math.rad(45), 0)
+    end
+end)
+
+local p_btn = Instance.new("TextButton", ui); p_btn.Size = UDim2.fromOffset(40,40); p_btn.Position = UDim2.new(0,10,0.5,-20)
+p_btn.Text = "P"; p_btn.BackgroundColor3 = Color3.fromRGB(30,30,30); p_btn.TextColor3 = Color3.new(0,1,1)
+p_btn.MouseButton1Click:Connect(function() frame.Visible = not frame.Visible end)
