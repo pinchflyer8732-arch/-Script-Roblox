@@ -1,4 +1,4 @@
--- [[ OWNER: พีเฟิร์ส™ | V6.3 - ALL IN MAIN TAB ]] --
+-- [[ OWNER: พีเฟิร์ส™ | V6.4 - MAX DISTANCE ESP + ORIGINAL UI ]] --
 
 local p = game:GetService("Players")
 local lp = p.LocalPlayer
@@ -16,16 +16,16 @@ rs.Heartbeat:Connect(function()
     end
 end)
 
--- [[ 2. สร้าง UI หน้าตาเดิม (อ้างอิงจากรูป V5.5) ]] --
-if cg:FindFirstChild("PFirst_Final_Final") then cg.PFirst_Final_Final:Destroy() end
-local ui = Instance.new("ScreenGui", cg); ui.Name = "PFirst_Final_Final"
+-- [[ 2. สร้าง UI หน้าตาเดิม (V5.5 Style) ]] --
+if cg:FindFirstChild("PFirst_Final_Max") then cg.PFirst_Final_Max:Destroy() end
+local ui = Instance.new("ScreenGui", cg); ui.Name = "PFirst_Final_Max"
 
 local frame = Instance.new("Frame", ui)
 frame.Size = UDim2.new(0, 550, 0, 420); frame.Position = UDim2.new(0.5, -275, 0.5, -210)
 frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15); frame.BorderSizePixel = 2; frame.BorderColor3 = Color3.fromRGB(0, 255, 0); frame.Active = true; frame.Draggable = true
 
 local side = Instance.new("Frame", frame); side.Size = UDim2.new(0, 160, 1, 0); side.BackgroundColor3 = Color3.fromRGB(15, 15, 15); side.BorderSizePixel = 0
-local title = Instance.new("TextLabel", side); title.Size = UDim2.new(1, 0, 0, 60); title.Text = "พีเฟิร์ส™ V6.3"; title.TextColor3 = Color3.new(0, 1, 0); title.Font = Enum.Font.SourceSansBold; title.TextSize = 22; title.BackgroundTransparency = 1
+local title = Instance.new("TextLabel", side); title.Size = UDim2.new(1, 0, 0, 60); title.Text = "พีเฟิร์ส™ V6.4"; title.TextColor3 = Color3.new(0, 1, 0); title.Font = Enum.Font.SourceSansBold; title.TextSize = 22; title.BackgroundTransparency = 1
 
 local page_main = Instance.new("ScrollingFrame", frame); page_main.Size = UDim2.new(1, -175, 1, -20); page_main.Position = UDim2.new(0, 165, 0, 10); page_main.BackgroundTransparency = 1; page_main.Visible = true; page_main.ScrollBarThickness = 0
 local page_update = Instance.new("ScrollingFrame", frame); page_update.Size = UDim2.new(1, -175, 1, -20); page_update.Position = UDim2.new(0, 165, 0, 10); page_update.BackgroundTransparency = 1; page_update.Visible = false; page_update.ScrollBarThickness = 0
@@ -44,7 +44,7 @@ end
 Instance.new("UIListLayout", page_main).Padding = UDim.new(0, 8)
 Instance.new("UIListLayout", page_update).Padding = UDim.new(0, 8)
 
--- [[ 3. ปุ่มหน้าหลัก (ย้ายดีดมาไว้ที่นี่แล้ว) ]] --
+-- [[ 3. ปุ่มหน้าหลัก (เรียงลำดับตามสั่ง) ]] --
 make_btn("🌀 เริ่มดีด (Ultimate Fling)", Color3.fromRGB(200, 0, 0), page_main, function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/K1LAS1K/Ultimate-Fling-GUI/main/flingscript.lua"))()
 end)
@@ -56,13 +56,13 @@ make_btn("สเต็ปบราซิล: ปิด/เปิด", Color3.fro
 make_btn("หายตัว (Invisible FE)", Color3.fromRGB(220, 100, 0), page_main, function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"))() end)
 make_btn("Fly (บิน)", Color3.fromRGB(200, 0, 0), page_main, function() loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))() end)
 
--- [[ 4. หน้าอัพเดท Script ]] --
-make_btn("Update Log: V6.3 (Ready)", Color3.fromRGB(60, 60, 60), page_update, function() print("Updated") end)
+-- หน้าอัพเดท
+make_btn("Update: V6.4 Fixed ESP", Color3.fromRGB(60, 60, 60), page_update, function() end)
 
 -- ปุ่ม P
 local tgl = Instance.new("TextButton", ui); tgl.Size = UDim2.new(0, 45, 0, 45); tgl.Position = UDim2.new(0, 10, 0.5, 0); tgl.Text = "P"; tgl.BackgroundColor3 = Color3.new(0,0,0); tgl.TextColor3 = Color3.new(0,1,1); Instance.new("UICorner", tgl); tgl.MouseButton1Click:Connect(function() frame.Visible = not frame.Visible end)
 
--- [[ 5. ระบบ ESP แสดงชื่อบทบาท + @ชื่อจริง ]] --
+-- [[ 4. ระบบ ESP สแกนคนเข้าเซิร์ฟ + มองไกลขนาดเท่าเดิม (Fixed Size) ]] --
 task.spawn(function()
     while task.wait(1) do
         if ShowESP then
@@ -70,16 +70,31 @@ task.spawn(function()
                 if v ~= lp and v.Character and v.Character:FindFirstChild("Head") then
                     pcall(function()
                         local c = v.Character
-                        local bgui = c.Head:FindFirstChild("RoleTag") or Instance.new("BillboardGui", c.Head)
-                        bgui.Name = "RoleTag"; bgui.AlwaysOnTop = true; bgui.Size = UDim2.new(0, 200, 0, 50); bgui.StudsOffset = Vector3.new(0, 3, 0)
+                        local head = c.Head
+                        
+                        -- BillboardGui แบบมองไกลระดับแม็ค
+                        local bgui = head:FindFirstChild("RoleTag") or Instance.new("BillboardGui", head)
+                        bgui.Name = "RoleTag"
+                        bgui.AlwaysOnTop = true
+                        bgui.Size = UDim2.new(0, 150, 0, 50)
+                        bgui.StudsOffset = Vector3.new(0, 3, 0)
+                        bgui.MaxDistance = math.huge 
+                        
+                        -- [[ จุดสำคัญ: ทำให้ขนาดเท่าเดิมตลอดเวลา (Scale) ]] --
+                        bgui.SizeOffset = Vector2.new(0, 0)
+                        
                         local txt = bgui:FindFirstChild("Info") or Instance.new("TextLabel", bgui)
                         txt.Name = "Info"; txt.BackgroundTransparency = 1; txt.Size = UDim2.new(1, 0, 1, 0); txt.Font = Enum.Font.SourceSansBold; txt.TextSize = 16
+                        txt.TextStrokeTransparency = 0 -- ขอบดำชัดๆ
+                        
                         local kn = v.Backpack:FindFirstChild("Knife") or c:FindFirstChild("Knife")
                         local gn = v.Backpack:FindFirstChild("Gun") or c:FindFirstChild("Gun")
                         local role = kn and "ไอ้ชั่วสวาท" or (gn and "นายอำเภอ" or "คนดี")
                         txt.TextColor3 = kn and Color3.new(1,0,0) or (gn and Color3.new(0,0.5,1) or Color3.new(0,1,0))
                         txt.Text = role .. "\n(@" .. v.Name .. ")"
-                        local hl = c:FindFirstChild("E_HL") or Instance.new("Highlight", c); hl.Name = "E_HL"; hl.FillColor = txt.TextColor3; hl.FillTransparency = 0.5
+                        
+                        local hl = c:FindFirstChild("E_HL") or Instance.new("Highlight", c)
+                        hl.Name = "E_HL"; hl.FillColor = txt.TextColor3; hl.FillTransparency = 0.5
                     end)
                 end
             end
