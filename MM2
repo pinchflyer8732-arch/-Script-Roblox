@@ -8,12 +8,12 @@ local SpinActive = false
 local EspGunActive = false
 
 -- [ ล้าง UI เก่า ]
-if CoreGui:FindFirstChild("PFirst_V4_3_Classic") then 
+if CoreGui:FindFirstChild("FFH4X90FS ROBLOX V1") then 
     CoreGui.PFirst_V4_3_Classic:Destroy() 
 end
 
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "PFirst_V4_3_Classic"
+ScreenGui.Name = "FFH4X90FS ROBLOX V1"
 
 -- [ 1. ปุ่มเปิด-ปิดเมนู ]
 local ToggleBtn = Instance.new("TextButton", ScreenGui)
